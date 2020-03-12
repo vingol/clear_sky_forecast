@@ -17,7 +17,7 @@ k = 2
 latitude = df['Lat'][k]
 lontitude = df['Lon'][k]
 station_name = str(df['ID'][k]) + '.csv'
-nwp_name = df['NWP_ID'][k] +'.csv'
+nwp_name = df['NWP_ID'][k] + '.csv'
 
 dir_ = os.path.join(data_root, 'data')
 filepath_power = os.path.join(dir_, 'Power', station_name)
@@ -34,19 +34,24 @@ E = clear_sky_model(latitude, lontitude)
 T_amb1 = nwp.temperature[-33:].copy()
 T_amb2 = nwp.temperature[:-33].copy()
 T_amb = T_amb1.append(T_amb2)
-T_amb = pd.DataFrame({'T_amb': T_amb.values.reshape(-1)}, index=power.index) - 274.15
+T_amb = pd.DataFrame({'T_amb': T_amb.values.reshape(-1)},
+                     index=power.index) - 274.15
 
+# use data of 2018
+NOCT = 45.5  # from reference
+T_amb_2018 = T_amb[96 * 365:]
+T_c = T_amb.values.reshape(-1) + E.values.reshape(-1) * (NOCT - 20) / 800
+K_Tc_2018 = 1 - 0.005 * (T_c[:365 * 96] - 25)
+power_2018 = power[96 * 365:]
 
 # calculate clear index
 cap = power.max().tolist()[0]
-clear_set,_ = generate_clear_index_new(power, cap)
+clear_set, _ = generate_clear_index_new(power_2018, cap)
 
 # calculate P_fit
-NOCT = 45.5  # from reference
-T_c = T_amb.values.reshape(-1) + E.values.reshape(-1) * (NOCT - 20) / 800
-K_Tc = 1 - 0.005 * (T_c[:365 * 96] - 25)
-P_fit = fit_model(power, E, K_Tc, clear_set)
+P_fit, df_parameter, ratio_test, _ = fit_model(power, E, K_Tc_2018, clear_set)
+
 
 # forecast
-
-_ = forecast_(E, P_fit, power, set_, ratio_test, K_Tc, start_time_k)
+start_time_k = 20
+_ = forecast_(E, P_fit, power, clear_set, ratio_test, K_Tc_2018, 20)
