@@ -9,7 +9,8 @@ from scipy.optimize import curve_fit
 
 
 def func_altitude(x, alpha, belta, c):
-    return c + alpha * np.sin(2 * x * np.pi / 365) + belta * np.cos(2 * x * np.pi / 365)
+    return c + alpha * np.sin(2 * x * np.pi / 365) + \
+        belta * np.cos(2 * x * np.pi / 365)
 
 
 def func(I, a1, a2, a3):
@@ -26,8 +27,8 @@ def RMSE_oneday(y, y_hat):
 
 
 def return_func(E, popt_test):
-    return np.array([0 if E.values.reshape(-1)[i] == 0 else func(E.values.reshape(-1)[i], *popt_test)
-                     for i in range(len(E))])
+    return np.array([0 if E.values.reshape(-1)[i] ==
+                     0 else func(E.values.reshape(-1)[i], *popt_test) for i in range(len(E))])
 
 
 def fit_model_new(power, E, nwp, clear_set):
@@ -51,13 +52,15 @@ def fit_model_new(power, E, nwp, clear_set):
     T_amb1 = nwp.temperature[96 * 365 - 33:96 * 365].copy()
     T_amb2 = nwp.temperature[:96 * 365 - 33].copy()
     T_amb = T_amb1.append(T_amb2)
-    T_amb = pd.DataFrame({'T_amb': T_amb.values.reshape(-1)}, index=power.index) - 274.15
+    T_amb = pd.DataFrame({'T_amb': T_amb.values.reshape(-1)},
+                         index=power.index) - 274.15
 
     NOCT = 45.5  # from reference
     T_c = T_amb.values.reshape(-1) + E.values.reshape(-1) * (NOCT - 20) / 800
     K_Tc = 1 - 0.005 * (T_c[:365 * 96] - 25)
 
-    power_ = pd.DataFrame({'power': power[:365 * 96].values.reshape(-1) / K_Tc}, index=power.index)
+    power_ = pd.DataFrame(
+        {'power': power[:365 * 96].values.reshape(-1) / K_Tc}, index=power.index)
 
     # 用于拟合的数据是晴天的数据，
     ratio_train = []
@@ -93,10 +96,11 @@ def fit_model_new(power, E, nwp, clear_set):
 
         X2 = X2[X2 > 1].dropna()
         Y2 = Y2.loc[X2.index]
-        popt_2, pcov_2 = curve_fit(func, X2.values.reshape(-1), Y2.values.reshape(-1))
+        popt_2, pcov_2 = curve_fit(
+            func, X2.values.reshape(-1), Y2.values.reshape(-1))
 
-        P_I = np.array([0 if E.values.reshape(-1)[i] == 0 else func(E.values.reshape(-1)[i], *popt_2)
-                        for i in range(len(E))])
+        P_I = np.array([0 if E.values.reshape(-1)[i] ==
+                        0 else func(E.values.reshape(-1)[i], *popt_2) for i in range(len(E))])
         P_I[P_I < 0] = 0
 
         P_fit = P_I * ratio_test * K_Tc
@@ -130,7 +134,8 @@ def fit_model(power, E, K_Tc, clear_set):
     E.index = power.index
     E_max = E.max()
 
-    power_ = pd.DataFrame({'power': power[:365 * 96].values.reshape(-1) / K_Tc}, index=power.index)
+    power_ = pd.DataFrame(
+        {'power': power[:365 * 96].values.reshape(-1) / K_Tc}, index=power.index)
 
     # 用于拟合的数据是晴天的数据，
     ratio_train = []
@@ -165,10 +170,11 @@ def fit_model(power, E, K_Tc, clear_set):
 
         X2 = X2[X2 > 1].dropna()
         Y2 = Y2.loc[X2.index]
-        popt_2, pcov_2 = curve_fit(func, X2.values.reshape(-1), Y2.values.reshape(-1))
+        popt_2, pcov_2 = curve_fit(
+            func, X2.values.reshape(-1), Y2.values.reshape(-1))
 
-        P_I = np.array([0 if E.values.reshape(-1)[i] == 0 else func(E.values.reshape(-1)[i], *popt_2)
-                        for i in range(len(E))])
+        P_I = np.array([0 if E.values.reshape(-1)[i] ==
+                        0 else func(E.values.reshape(-1)[i], *popt_2) for i in range(len(E))])
         P_I[P_I < 0] = 0
 
         P_fit = P_I * ratio_test * K_Tc
@@ -179,28 +185,38 @@ def fit_model(power, E, K_Tc, clear_set):
         names['P_single_%d' % date] = P_fit
 
     # 分段拟合得到最终结果
-    P_final_single = pd.DataFrame({'P': np.arange(365 * 96)}, index=power.index)
+    P_final_single = pd.DataFrame(
+        {'P': np.arange(365 * 96)}, index=power.index)
 
     Section = [0]
     for i in range(len(clear_set)):
         if i == 0 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) > 0:
-            Section = Section + [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
+            Section = Section + \
+                [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
         elif i == len(clear_set) - 1 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) < 0:
-            Section = Section + [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
+            Section = Section + \
+                [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
         elif i != 0:
             Section = Section + [int((clear_set[i - 1] + clear_set[i]) / 2)]
 
     Section = Section + [365]
 
     for (i, date) in enumerate(clear_set):
-        P_final_single.iloc[Section[i] * 96:Section[i + 1] * 96] = names['P_single_%d' % date].iloc[
-                                                                   Section[i] * 96:Section[i + 1] * 96].values
+        P_final_single.iloc[Section[i] *
+                            96:Section[i +
+                                       1] *
+                            96] = names['P_single_%d' %
+                                        date].iloc[Section[i] *
+                                                   96:Section[i +
+                                                              1] *
+                                                   96].values
     P_final_single[P_final_single['P'] < 0] = 0
 
     df_parameter = pd.DataFrame(parameter).T
     df_parameter.columns = ['a1', 'a2', 'a3']
 
     return P_final_single, df_parameter, ratio_test, K_Tc
+
 
 if __name__ == "__main__":
     df = pd.read_csv('basic_info.xlsx', )

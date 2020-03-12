@@ -54,4 +54,5 @@ P_fit, df_parameter, ratio_test, _ = fit_model(power, E, K_Tc_2018, clear_set)
 
 # forecast
 start_time_k = 20
-_ = forecast_(E, P_fit, power, clear_set, ratio_test, K_Tc_2018, 20)
+y_hat_all, y_true_all, RMSE_ = forecast_(
+    E, P_fit, power, clear_set, ratio_test, K_Tc_2018, 20)
