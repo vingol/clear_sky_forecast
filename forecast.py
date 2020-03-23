@@ -47,6 +47,7 @@ def func(I, a1, a2, a3): return (a1 + a2 * I + a3 * np.log(I)) * I
 
 def forecast_(E, P_fit, power_, set_, ratio_test, K_Tc, start_time_k):
     RMSE_ = []
+    set_ = np.array(set_)
 
     lb = [-3.022665909989761, -0.0032645802674822265, -0.21590802965658423]
     ub = [2.721796172973509, -0.000342, 0.8838005111891243]
