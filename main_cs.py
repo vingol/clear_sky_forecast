@@ -16,7 +16,7 @@ data_root = os.path.abspath("/Users/mayuan/Downloads/projects/data_jilin")
 # basic info
 df = pd.read_excel(r'basic_info.xlsx', sheet_name='solar')
 #
-for k in range(10, len(df)):
+for k in range(0, len(df)):
     try:
 
         print(str(df['ID'][k]), 'start')
