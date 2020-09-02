@@ -184,33 +184,38 @@ def fit_model(power, E, K_Tc, clear_set):
         parameter['%d' % date] = popt_2
         names['P_single_%d' % date] = P_fit
 
-    # 分段拟合得到最终结果
-    P_final_single = pd.DataFrame(
-        {'P': np.arange(365 * 96)}, index=power.index)
+    # # 分段拟合得到最终结果
+    # P_final_single = pd.DataFrame(
+    #     {'P': np.arange(365 * 96)}, index=power.index)
 
-    Section = [0]
-    for i in range(len(clear_set)):
-        if i == 0 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) > 0:
-            Section = Section + \
-                [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
-        elif i == len(clear_set) - 1 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) < 0:
-            Section = Section + \
-                [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
-        elif i != 0:
-            Section = Section + [int((clear_set[i - 1] + clear_set[i]) / 2)]
+    # Section = [0]
+    # for i in range(len(clear_set)):
+    #     if i == 0 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) > 0:
+    #         Section = Section + \
+    #             [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
+    #     elif i == len(clear_set) - 1 and int((clear_set[i - 1] - 365 + clear_set[i]) / 2) < 0:
+    #         Section = Section + \
+    #             [int((clear_set[i - 1] - 365 + clear_set[i]) / 2)]
+    #     elif i != 0:
+    #         Section = Section + [int((clear_set[i - 1] + clear_set[i]) / 2)]
+    #
+    # Section = Section + [365]
 
-    Section = Section + [365]
+    # for (i, date) in enumerate(Section):
+        # P_final_single.iloc[Section[i] *
+        #                     96:Section[i +
+        #                                1] *
+        #                     96] = names['P_single_%d' %
+        #                                 date].iloc[Section[i] *
+        #                                            96:Section[i +
+        #                                                       1] *
+        #                                            96].values
+    P_final_single = names['P_single_%d' % clear_set[0]]
 
-    for (i, date) in enumerate(clear_set):
-        P_final_single.iloc[Section[i] *
-                            96:Section[i +
-                                       1] *
-                            96] = names['P_single_%d' %
-                                        date].iloc[Section[i] *
-                                                   96:Section[i +
-                                                              1] *
-                                                   96].values
-    P_final_single[P_final_single['P'] < 0] = 0
+    for clear_date in clear_set:
+        P_final_single.iloc[(clear_date+1)*96:len(power)] = names['P_single_%d' %
+                                        clear_date].iloc[(clear_date+1)*96:]
+    P_final_single[P_final_single['P_fit'] < 0] = 0
 
     df_parameter = pd.DataFrame(parameter).T
     df_parameter.columns = ['a1', 'a2', 'a3']

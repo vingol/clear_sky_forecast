@@ -1,11 +1,9 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
+from minisom import MiniSom
 
 
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):

@@ -33,7 +33,7 @@ def generate_clear_index_new(power, cap):
         index_middle = frame.iloc[middle:middle + 1].index
 
         # requirement 1
-        if frame.max().values <= 0.85 * cap:
+        if frame.max().values <= 0.7 * cap:
             flag = 0
         label.append(flag)
 
@@ -81,7 +81,7 @@ def generate_clear_index_new(power, cap):
         label.append(flag)
 
         # requirement 5
-        wavenum = 2  # 条件
+        wavenum = 1  # 条件
         judge_5 = 0
         epison = 0.02 * cap
         for i in range(10, 70):

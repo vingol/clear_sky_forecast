@@ -54,18 +54,18 @@ clear_set, _ = generate_clear_index_new(power_2018, cap)
 #####################################################################################
 # calculate P_fit
 P_fit, df_parameter, ratio_test, _ = fit_model(power_2018, E, K_Tc_2018, clear_set)
-
-# forecast
-start_time_k = 20
-y_hat_all_short, y_true_all, RMSE_ = forecast_(
-    E, P_fit, power_2018, clear_set, ratio_test, K_Tc_2018, 20)
-
-y_hat_all_long, y_true_all, RMSE_ = forecast_(
-    E, P_fit, power_2018, clear_set, ratio_test, K_Tc_2018, 28)
-
-y_hat_final_1 = y_hat_all_short.iloc[:,:3]
-y_hat_final_2 = y_hat_all_long.iloc[:,3:]
-y_hat_final = pd.concat([y_hat_final_1, y_hat_final_2], axis=1)
+#
+# # forecast
+# start_time_k = 20
+# y_hat_all_short, y_true_all, RMSE_ = forecast_(
+#     E, P_fit, power_2018, clear_set, ratio_test, K_Tc_2018, 20)
+#
+# y_hat_all_long, y_true_all, RMSE_ = forecast_(
+#     E, P_fit, power_2018, clear_set, ratio_test, K_Tc_2018, 28)
+#
+# y_hat_final_1 = y_hat_all_short.iloc[:,:3]
+# y_hat_final_2 = y_hat_all_long.iloc[:,3:]
+# y_hat_final = pd.concat([y_hat_final_1, y_hat_final_2], axis=1)
     # return y_hat_all, y_true_all, RMSE_
 
 # forecast for 2019
@@ -97,7 +97,7 @@ y_hat_all_long_2019, y_true_all_2019, RMSE_ = forecast_(
 y_hat_final_1_2019 = y_hat_all_short_2019.iloc[:,:3]
 y_hat_final_2_2019 = y_hat_all_long_2019.iloc[:,3:]
 y_hat_final_2019 = pd.concat([y_hat_final_1_2019, y_hat_final_2_2019], axis=1)
-y_hat_final_2019.to_csv('y_hat_final.csv')
+y_hat_final_2019.to_csv('y_hat_final_.csv')
 #
 # # plot
 # import datetime
